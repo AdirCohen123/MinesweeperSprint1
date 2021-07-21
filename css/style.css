@@ -1,0 +1,111 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    text-align: center;
+    font-size: 14px;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+    background-color: #628395;
+}
+
+h1 {
+    letter-spacing: 0;
+    font-weight: normal;
+    position: relative;
+    padding: 0 0 10px 0;
+    font-weight: normal;
+    line-height: normal;
+    color: #111111;
+    margin: 0;
+    font-size: 100px;
+    font-family: 'Dancing Script', cursive;
+}
+
+table {
+    margin: 0 auto;
+    width: 500px;
+    height: 500px;
+    border: 4px solid black;
+    background-color: #ffa0a096;
+}
+
+.cell {
+    font-size: 10px;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    color: black;
+    border: 2px solid black;
+}
+
+.cell:hover {
+    cursor: pointer;
+    background-color: rgba(128, 128, 128, 0.472);
+    opacity: 0.5;
+}
+
+.hide-cell {
+    color: black;
+}
+
+.timer {
+    border: 1px solid black;
+    min-width: 70px;
+    height: 30px;
+    display: inline;
+}
+
+.timer-flags {
+    text-align: center;
+    border: 1px solid black;
+    width: 300px;
+    height: 50px;
+    margin: 0 auto;
+}
+
+.flags-number {
+    border: 1px solid black;
+    width: 70px;
+    height: 30px;
+    display: inline;
+    margin-left: 50px;
+}
+
+.cell-open {
+    background-color: #cac5c5;
+    box-shadow: 0px 0px 1px 1px #857d7d;
+}
+
+.last-mine {
+    background-color: red;
+}
+
+button {
+    position: relative;
+    width: auto;
+    display: inline-block;
+    color: #ecf0f1;
+    text-decoration: none;
+    border-radius: 5px;
+    border: solid 1px #262A53;
+    background: #262A53;
+    text-align: center;
+    padding: 16px 18px 14px;
+    margin: 12px;
+    -webkit-transition: all 0.1s;
+    -moz-transition: all 0.1s;
+    transition: all 0.1s;
+    -webkit-box-shadow: 0px 6px 0px #ffa0a085;
+    -moz-box-shadow: 0px 6px 0px #ffa0a085;
+    box-shadow: 0px 6px 0px #ffa0a085;
+}
+
+button:active {
+    -webkit-box-shadow: 0px 2px 0px #ffa0a085;
+    -moz-box-shadow: 0px 2px 0px #ffa0a085;
+    box-shadow: 0px 2px 0px #ffa0a085;
+    position: relative;
+    top: 4px;
+}
