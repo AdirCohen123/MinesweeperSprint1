@@ -10,27 +10,46 @@
 </head>
 
 <body onload="initGame()">
-    <h1 class="logo">Minesweeper</h1>
-    <!-- Furthers -->
-    <div class="tool-bar">
-        <div class="icon"></div>
+    <div class="to-fireworks">
+        <button onclick="closeModal()">x</button>
+        <a href="./fireworks.html"><span>You are the WINNER!!</span></a>
+    </div>
+    <div class="container">
+        <div class="logo">
+            <h1><img src="./img/logo.png" alt=""></h1>
+        </div>
+        <!-- Furthers -->
         <div class="timer-flags">
-            <h2 class="timer"></h2>
-            <h2 class="flags-number">🚩</h2>
+            <h2><span class="timer"></span>🕓</h2>
+            <div>
+
+                <h2><button class="hints" onclick="takeHint(this)">💡</button></h2>
+                <h2><button class="hints" onclick="takeHint(this)">💡</button></h2>
+                <h2><button class="hints" onclick="takeHint(this)">💡</button></h2>
+                <h2><button class="safeClick" onclick="onSafeClick(this)">🧷</button></h2>
+                <h2><button class="safeClick" onclick="onSafeClick(this)">🧷</button></h2>
+                <h2><button class="safeClick" onclick="onSafeClick(this)">🧷</button></h2>
+            </div>
+            <h2><span class="flags-number"></span>🚩</h2>
+            <h2><span class="lives"></span></h2>
         </div>
 
         <div class="score"></div>
         <div class="levels-buttons"></div>
+        <div><button class="icon" onclick="initGame()"></button></div>
 
 
         <!-- board -->
+        <div class="entry">
+            <h1>Welcome to Minesweeper Please choose level to start the game enjoy</h1>
+        </div>
         <div class="board-container"></div>
+    </div>
 
-
-        <script src="./js/utils.js"></script>
-        <script src="./js/main.js"></script>
-        <script src="./js/onclick.js"></script>
-        <script src="./js/neighbors.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/main.js"></script>
+    <script src="./js/onclick.js"></script>
+    <script src="./js/neighbors.js"></script>
 </body>
 
 </html>

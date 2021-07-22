@@ -8,8 +8,9 @@ function renderBoard(board) {
     for (var i = 0; i < board.length; i++) {
         strHTML += '<tr>\n';
         for (var j = 0; j < board.length; j++) {
+            var cellColor = (i + j) % 2 === 0 ? 'white' : 'dark'
             var className = `cell cell-${i}-${j}`;
-            strHTML += `<td oncontextmenu="cellMarked(this,${i},${j})" onclick="cellClicked(this, ${i}, ${j})" class="${className}"></td>`
+            strHTML += `<td oncontextmenu="cellMarked(this,${i},${j})" onclick="cellClicked(this, ${i}, ${j})" class="${className} ${cellColor}"></td>`
         }
         strHTML += '</tr>';
     }
@@ -54,14 +55,13 @@ function addMine(board, i, j) {
         isCanClick: true
     }
     board[i][j] = cell;
-    gGame.mines.push({ i: i, j: j });
+    gGame.mines.push({ i, j });
 }
 
 
 
 function updateTimer() {
-    var elTimer = document.querySelector('.timer-flags .timer');
-    console.log(elTimer);
+    var elTimer = document.querySelector('.timer');
     elTimer.innerText = elTimer.innerText === "" ? 0 : parseInt(elTimer.innerText) + 1;
 }
 
@@ -92,9 +92,4 @@ function renderLevelButton() {
 
 function getRandomInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function renderIcon(icon) {
-    var elIcon = document.querySelector('.icon');
-    elIcon.innerText = icon;
 }

@@ -8,6 +8,11 @@ const WIN_FACE = '😎';
 const LOSE_FACE = '🤯';
 const NORMAL_FACE = '😉';
 const TIMER_INTERVAL = 1000;
+const LIVE = '❤️';
+const LIVE_TAKEN = '🤍';
+const LAST_MINE_EXPLODE = '💥';
+const HINT = '💡';
+const SAFE_CLICK = '🧷';
 
 var gTimerInterval;
 var gLevels = createLevels();
@@ -16,25 +21,41 @@ var gGame;
 var gCurrLevel;
 var gLives;
 
+/**** sounds ****/
+var winAudio = new Audio('./sounds/sounds_gameWin.wav');
+var loseAudio = new Audio('./sounds/sounds_gameOver.wav');
+var flagAudio = new Audio('./sounds/sounds_flag.wav');
+var mineAudio = new Audio('./sounds/sounds_wrong.wav');
+var unflagAudio = new Audio('./sounds/sounds_unflag.wav');
+var clicklAudio = new Audio('./sounds/sounds_click.wav');
+
 /**
  * Main function of the game
  */
 function initGame() {
+    clearInterval(gTimerInterval)
     renderLevelButton()
-    renderIcon(NORMAL_FACE);
+    resetHints();
+    resetSafeClick();
+    var elLive = document.querySelector('.lives')
+    elLive.innerText = LIVE + LIVE + LIVE
     gGame = {
         isOn: true,
         isFirstClick: true,
         shownCount: 0,
         markedCount: 0,
         mines: [],
-        gLives: 0
+        gLives: 0,
+        gHint: false,
+        isCanClick: true
 
     }
-    var elTimer = document.querySelector(".timer");
-    elTimer.innerText = 0;
+    renderIcon(NORMAL_FACE);
     gBoard = buildBoard();
     renderBoard(gBoard);
+    document.querySelector('.entry').style.display = 'none';
+    var elTimer = document.querySelector(".timer");
+    elTimer.innerText = 0;
 }
 
 /**
@@ -43,6 +64,7 @@ function initGame() {
  */
 function selectLevel(idx) {
     gCurrLevel = gLevels[idx];
+    clearInterval(gTimerInterval);
     initGame()
 }
 
@@ -67,11 +89,11 @@ function createLevel(levelName, mines, boardSize, numberOfLives) {
  * @returns an array of the levels
  */
 function createLevels() {
-    var beginnerLevel = createLevel('Beginner', 12, 8, 3);
-    var mediumLevel = createLevel('Medium', 20, 10, 3);
-    var expertLevel = createLevel('Expert', 40, 16, 3);
-    return [beginnerLevel, mediumLevel, expertLevel]
-
+    var beginnerLevel = createLevel('Beginner', 8, 6, 3);
+    var mediumLevel = createLevel('Medium', 15, 8, 3);
+    var expertLevel = createLevel('Expert', 30, 12, 3);
+    var scaryLevel = createLevel('Scary', 40, 16, 3);
+    return [beginnerLevel, mediumLevel, expertLevel, scaryLevel]
 }
 
 /**
@@ -101,16 +123,19 @@ function buildBoard() {
 
 
 function checkGameOver() {
-    if (gGame.shownCount + gGame.markedCount === gCurrLevel.boardSize * gCurrLevel.boardSize) {
-        endGame(true, "WIN!!!");
+    var elVictory = document.querySelector('.to-fireworks');
+    if (gGame.shownCount + gGame.markedCount === gCurrLevel.boardSize ** 2) {
+        winAudio.play()
+        elVictory.style.display = 'block'
+        endOfGame(true, "WIN!!!");
     }
 }
 
-function endGame(isWin, msg) {
+function endOfGame(isWin, msg) {
     gGame.isOn = false;
     renderIcon(isWin ? WIN_FACE : LOSE_FACE);
     clearInterval(gTimerInterval);
-
+    if (!isWin) loseAudio.play();
     console.log("!!! END GAME: " + msg);
 
 }
@@ -123,7 +148,7 @@ function endGame(isWin, msg) {
  * @param {*} i 
  * @param {*} j 
  */
-function expandShown(board, elCell, i, j) {
+function expandShown(board, i, j) {
     var pos = { i, j };
     expandOtherNegs(board, pos);
 
@@ -136,8 +161,8 @@ function expandOtherNegs(board, pos) {
             if (!checkInBound(board, { i, j })) continue;
             var currCell = board[i][j];
             if (!currCell.isMarked && !currCell.isShown && !currCell.isMine) {
-                if (currCell.isShown) continue;
-                var selector = '.cell-' + i + "-" + j;
+                gGame.shownCount++
+                    var selector = '.cell-' + i + "-" + j;
                 var elCell = document.querySelector(selector);
                 elCell.innerText = currCell.type;
                 currCell.isShown = true;
@@ -148,4 +173,82 @@ function expandOtherNegs(board, pos) {
             }
         }
     }
+}
+
+function closeModal() {
+    var elModal = document.querySelector('.to-fireworks')
+    elModal.style.display = 'none';
+}
+// reset the buttons every reset
+function resetHints(disabled = true) {
+    var [elHint1, elHint2, elHint3] = document.querySelectorAll('.hints');
+    elHint1.disabled = disabled;
+    elHint1.innerText = HINT;
+    elHint2.disabled = disabled;
+    elHint2.innerText = HINT;
+    elHint3.disabled = disabled;
+    elHint3.innerText = HINT;
+}
+
+function takeHint(elHint) {
+    if (!gGame.isOn || gGame.gHint) return;
+    elHint.disabled = true;
+    gGame.gHint = true;
+
+}
+// render the icon 
+function renderIcon(icon) {
+    var elIcon = document.querySelector('.icon');
+    elIcon.innerText = icon;
+}
+
+// reset the buttons every reset
+function resetSafeClick(disabled = true) {
+    var [elSafe1, elSafe2, elSafe3] = document.querySelectorAll('.safeClick');
+    elSafe1.disabled = disabled;
+    elSafe1.innerText = SAFE_CLICK;
+    elSafe2.disabled = disabled;
+    elSafe2.innerText = SAFE_CLICK;
+    elSafe3.disabled = disabled;
+    elSafe3.innerText = SAFE_CLICK;
+}
+
+/**
+ * this function give you safe click 
+ * @param {*} elSafeClick 
+ * @returns 
+ */
+function onSafeClick(elSafeClick) {
+    if (!gGame.isOn) return;
+    elSafeClick.disabled = true;
+
+    var isClosedFound = false;
+    for (var i = 0; i < gBoard.length; i++) {
+        for (var j = 0; j < gBoard.length; j++) {
+            if (gBoard[i][j].type !== EMPTY && gBoard[i][j].type !== MINE && gBoard[i][j].type !== FLAG && !gBoard[i][j].isShown) {
+                isClosedFound = true;
+                break;
+            }
+        }
+    }
+    if (!isClosedFound) {
+        return;
+    }
+    do {
+        var i = getRandomInteger(0, gBoard.length - 1);
+        var j = getRandomInteger(0, gBoard.length - 1);
+
+    } while (gBoard[i][j].type === EMPTY || gBoard[i][j].type === MINE || gBoard[i][j].type === FLAG || gBoard[i][j].isShown);
+
+    openCell({ i, j });
+    return;
+}
+
+function openCell(pos) {
+    var selector = '.cell-' + pos.i + "-" + pos.j;
+    var elCell = document.querySelector(selector);
+    elCell.innerText = gBoard[pos.i][pos.j].type;
+    gBoard[pos.i][pos.j].isShown = true;
+    gGame.shownCount++;
+
 }
