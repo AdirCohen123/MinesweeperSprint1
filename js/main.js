@@ -13,6 +13,7 @@ const LIVE_TAKEN = '🤍';
 const LAST_MINE_EXPLODE = '💥';
 const HINT = '💡';
 const SAFE_CLICK = '🧷';
+const TROPHY = '🏆';
 
 var gTimerInterval;
 var gLevels = createLevels();
@@ -20,6 +21,7 @@ var gBoard;
 var gGame;
 var gCurrLevel;
 var gLives;
+var gTimeCounter;
 
 /**** sounds ****/
 var winAudio = new Audio('./sounds/sounds_gameWin.wav');
@@ -34,6 +36,7 @@ var clicklAudio = new Audio('./sounds/sounds_click.wav');
  */
 function initGame() {
     clearInterval(gTimerInterval)
+    gTimeCounter = 0;
     renderLevelButton()
     resetHints();
     resetSafeClick();
@@ -47,13 +50,15 @@ function initGame() {
         mines: [],
         gLives: 0,
         gHint: false,
-        isCanClick: true
+        isCanClick: true,
+        minesExposed: 0
 
     }
     renderIcon(NORMAL_FACE);
+    renderScoreStart()
     gBoard = buildBoard();
     renderBoard(gBoard);
-    document.querySelector('.entry').style.display = 'none';
+    document.querySelector('.records').style.display = 'none';
     var elTimer = document.querySelector(".timer");
     elTimer.innerText = 0;
 }
@@ -81,6 +86,7 @@ function createLevel(levelName, mines, boardSize, numberOfLives) {
         mines,
         boardSize,
         numberOfLives
+
     }
 }
 
@@ -117,15 +123,18 @@ function buildBoard() {
             board[i][j] = cell;
         }
     }
-    console.log(board);
     return board;
 }
 
 
 function checkGameOver() {
     var elVictory = document.querySelector('.to-fireworks');
-    if (gGame.shownCount + gGame.markedCount === gCurrLevel.boardSize ** 2) {
+    if (gGame.markedCount + gGame.shownCount === gCurrLevel.boardSize ** 2 &&
+        gGame.isMarked === gCurrLevel.mines ||
+        gGame.shownCount + gCurrLevel.mines - gGame.minesExposed === gCurrLevel.boardSize ** 2) {
         winAudio.play()
+        renderScore(gTimeCounter)
+
         elVictory.style.display = 'block'
         endOfGame(true, "WIN!!!");
     }
@@ -137,7 +146,6 @@ function endOfGame(isWin, msg) {
     clearInterval(gTimerInterval);
     if (!isWin) loseAudio.play();
     console.log("!!! END GAME: " + msg);
-
 }
 
 
@@ -164,6 +172,38 @@ function expandOtherNegs(board, pos) {
                 gGame.shownCount++
                     var selector = '.cell-' + i + "-" + j;
                 var elCell = document.querySelector(selector);
+                var openCellClass = (i + j) % 2 === 0 ? 'open-cell-light' : 'open-cell-dark';
+                var value = board[i][j].type
+                var classColor;
+                if (value) {
+                    switch (+value % 6) {
+                        case 0:
+                            classColor = 'black-number';
+                            break;
+                        case 1:
+                            classColor = 'blue-number';
+                            break;
+                        case 2:
+                            classColor = 'red-number';
+                            break;
+                        case 3:
+                            classColor = 'purple-number';
+                            break;
+                        case 4:
+                            classColor = 'orange-number';
+                            break;
+                        case 5:
+                            classColor = 'pink-number';
+                            break;
+                        case 6:
+                            classColor = 'green-number';
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                elCell.classList.add(`${openCellClass}`);
+                elCell.classList.add(`${classColor}`);
                 elCell.innerText = currCell.type;
                 currCell.isShown = true;
                 if (currCell.type === EMPTY) {
@@ -247,8 +287,63 @@ function onSafeClick(elSafeClick) {
 function openCell(pos) {
     var selector = '.cell-' + pos.i + "-" + pos.j;
     var elCell = document.querySelector(selector);
+    elCell.classList.add('safe-color');
     elCell.innerText = gBoard[pos.i][pos.j].type;
     gBoard[pos.i][pos.j].isShown = true;
     gGame.shownCount++;
 
+}
+
+function showScore() {
+    var elScore = document.querySelector('.records');
+    if (elScore.style.display === 'block') {
+        elScore.style.display = 'none';
+    } else {
+        elScore.style.display = 'block';
+    }
+}
+
+
+function renderScore(time) {
+    if (!localStorage.beginnerScore) {
+        localStorage.setItem("beginnerScore", 500);
+    }
+    if (gCurrLevel.levelName === 'Beginner' && time < localStorage.beginnerScore) {
+        localStorage.beginnerScore = time
+        localStorage.setItem('beginnerScore', `${time}`);
+    }
+    if (!localStorage.mediumScore) {
+        localStorage.setItem("mediumScore", 500);
+    }
+    if (gCurrLevel.levelName === 'Medium' && time < localStorage.mediumScore) {
+        localStorage.mediumScore = time
+        localStorage.setItem('mediumScore', `${time}`);
+    }
+
+    if (!localStorage.expertScore) {
+        localStorage.setItem("expertScore", 500);
+    }
+    if (gCurrLevel.levelName === 'Expert' && time < localStorage.expertScore) {
+        localStorage.expertScore = time
+        localStorage.setItem('expertScore', `${time}`);
+    }
+    if (!localStorage.scaryScore) {
+        localStorage.setItem("scaryScore", 500);
+    }
+    if (gCurrLevel.levelName === 'Scary' && time < localStorage.scaryScore) {
+        localStorage.scaryScore = time
+        localStorage.setItem('scaryScore', `${time}`);
+    }
+    renderScoreStart()
+}
+
+function renderScoreStart() {
+    var elScore = document.querySelector('.beginner');
+    elScore.innerHTML = localStorage.beginnerScore
+    elScore = document.querySelector('.medium');
+    elScore.innerHTML = localStorage.mediumScore
+    elScore = document.querySelector('.expert');
+    elScore.innerHTML = localStorage.expertScore
+    elScore = document.querySelector('.scary');
+    elScore.innerHTML = localStorage.scaryScore
 }

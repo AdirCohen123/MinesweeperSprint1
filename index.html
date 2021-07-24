@@ -20,6 +20,7 @@
         </div>
         <!-- Furthers -->
         <div class="timer-flags">
+            <h2><button class="score-table" onclick="showScore()">🏆</button></h2>
             <h2><span class="timer"></span>🕓</h2>
             <div>
 
@@ -33,19 +34,43 @@
             <h2><span class="flags-number"></span>🚩</h2>
             <h2><span class="lives"></span></h2>
         </div>
-
-        <div class="score"></div>
         <div class="levels-buttons"></div>
         <div><button class="icon" onclick="initGame()"></button></div>
 
 
         <!-- board -->
-        <div class="entry">
-            <h1>Welcome to Minesweeper Please choose level to start the game enjoy</h1>
+        <div class="records">
+            </table>
+            <table class="record-table">
+                <tr>
+                    <td class="head">Levels</td>
+                    <td class="head">Best Score</td>
+                </tr>
+                <tr>
+                    <td>Beginner</td>
+                    <td class="score beginner"></td>
+                </tr>
+                <tr>
+                    <td>Medium</td>
+                    <td class="score medium"></td>
+                </tr>
+                <tr>
+                    <td>Expert</td>
+                    <td class="score expert"></td>
+                </tr>
+                <tr>
+                    <td>Scary</td>
+                    <td class="score scary"></td>
+                </tr>
+            </table>
+
         </div>
         <div class="board-container"></div>
     </div>
 
+    <footer>
+        <p>Created by <span>Adir Cohen</span> - Coding academy 2021
+    </footer>
     <script src="./js/utils.js"></script>
     <script src="./js/main.js"></script>
     <script src="./js/onclick.js"></script>

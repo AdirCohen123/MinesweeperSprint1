@@ -62,6 +62,7 @@ function addMine(board, i, j) {
 
 function updateTimer() {
     var elTimer = document.querySelector('.timer');
+    gTimeCounter++
     elTimer.innerText = elTimer.innerText === "" ? 0 : parseInt(elTimer.innerText) + 1;
 }
 
